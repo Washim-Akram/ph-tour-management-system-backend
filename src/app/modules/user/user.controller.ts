@@ -16,6 +16,35 @@ const createUser = catchAsync(
   }
 );
 
+const updateUser = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const userId = req.params.id;
+
+    // const token = req.headers.authorization;
+    // const verifiedToken = verifyToken(
+    //   token as string,
+    //   envVars.JWT_ACCESS_SECRET
+    // ) as JwtPayload;
+
+    const verifiedToken = req.user;
+
+    const payload = req.body;
+    const user = await UserServices.updateUser(userId, payload, verifiedToken);
+
+    // res.status(httpStatus.CREATED).json({
+    //     message: "User Created Successfully",
+    //     user
+    // })
+
+    sendResponse(res, {
+      success: true,
+      statusCode: 201,
+      message: "User Updated Successfully",
+      data: user,
+    });
+  }
+);
+
 const getAllUsers = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const result = await UserServices.getAllUsers();
@@ -32,4 +61,7 @@ const getAllUsers = catchAsync(
 export const UserControllers = {
   createUser,
   getAllUsers,
+  updateUser,
 };
+
+// route matching -> controller -> service -> model -> DB
